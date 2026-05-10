@@ -76,7 +76,7 @@ export default function HeroSection() {
           className="flex-1 max-w-xl text-center lg:text-left opacity-0 order-2 lg:order-1"
         >
           <h1 className="font-display text-4xl lg:text-5xl text-sand mb-2 leading-tight">
-            Professor Neela Lamki
+            Professor Naila (Neela) Lamki
           </h1>
           <p className="font-display text-xl text-sand/60 mb-6">(1941-2026)</p>
 
@@ -86,19 +86,19 @@ export default function HeroSection() {
 
           <div className="font-serif text-xl text-sand/70 leading-relaxed space-y-4 text-left">
             <p>
-              It is with great sadness that the family of Neela Lamki announce her passing on
+              It is with great sadness that the family of Naila Lamki announce her passing on
               Tuesday May 5<sup>th</sup>, 2026, after a sudden illness. She was surrounded by her
               husband and children as she passed peacefully from this life.
             </p>
             <p>
-              Neela led a tremendously full and productive life. Following her early education in
+              Naila led a tremendously full and productive life. Following her early education in
               Uganda, she attended the Royal College of Surgeons of Ireland, where she received
               her medical degree. Here, she met her life-partner, Dr Lamk Lamki, with whom she
               would spend 60 years of inseparable love and marriage.
             </p>
             <p>
               The young couple started their professional careers and family in Toronto, Canada
-              where Neela became a Consultant Radiologist.
+              where Naila became a Consultant Radiologist.
             </p>
             <p>
               The next phase of her career took her to Houston, Texas where she served for 20
@@ -107,12 +107,12 @@ export default function HeroSection() {
               Hospital.
             </p>
             <p>
-              The couple then moved to Muscat, Oman where Neela was instrumental in establishing
+              The couple then moved to Muscat, Oman where Naila was instrumental in establishing
               nineteen ACGME-accredited residency training programs through the Oman Medical
               Specialty Board, in which she served as the Vice President for Academic Affairs.
             </p>
             <p>
-              Neela published extensively, and was the recipient of numerous honors, awards and
+              Naila published extensively, and was the recipient of numerous honors, awards and
               fellowships from various departments and universities internationally. Throughout
               her life and career, she exhibited humility, compassion, quiet persistence, hard
               work and unending dedication to her family, patients and students. Her legacy
@@ -120,7 +120,7 @@ export default function HeroSection() {
               mentorship.
             </p>
             <p>
-              Neela is survived by her loving husband of 60 years, 3 children and 12 grandchildren.
+              Naila is survived by her loving husband of 60 years, 3 children and 12 grandchildren.
             </p>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function HeroSection() {
 
             <img
               src="/naila-portrait.jpg"
-              alt="Portrait of Professor Neela Lamki"
+              alt="Portrait of Professor Naila Lamki"
               className="relative w-80 lg:w-96 rounded-lg shadow-2xl shadow-black/30"
             />
 

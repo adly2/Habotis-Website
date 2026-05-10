@@ -48,7 +48,7 @@ export default function FloatingDonation() {
           </h4>
           <p className="font-serif text-sm text-sand/60 leading-relaxed mb-4">
             Continuous charity that benefits the deceased. Your donation to
-            breast cancer research rewards Neela&apos;s soul.
+            breast cancer research rewards Naila&apos;s soul.
           </p>
           <div className="flex flex-col gap-2">
             <a

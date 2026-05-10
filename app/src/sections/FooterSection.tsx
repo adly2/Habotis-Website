@@ -11,7 +11,7 @@ export default function FooterSection() {
         <p className="font-serif text-lg text-sand/80 leading-relaxed mb-8 max-w-xl mx-auto">
           Sadaqah Jariyah is a continuous charity that benefits the deceased even
           after they have passed. By donating to breast cancer research in
-          Neela&apos;s name, you create a lasting legacy of goodness that will
+          Naila&apos;s name, you create a lasting legacy of goodness that will
           continue to reward her soul.
         </p>
 

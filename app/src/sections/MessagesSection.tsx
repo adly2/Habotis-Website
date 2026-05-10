@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { trpc } from "@/providers/trpc";
+import { collection, getDocs, addDoc, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import gsap from "gsap";
 import { resizeImage } from "@/lib/resizeImage";
 
@@ -88,20 +89,17 @@ function MessageModal({ message, onClose }: MessageModalProps) {
       style={{ opacity: 0, zIndex: 2147483647 }}
       onClick={handleClose}
     >
-      {/* Backdrop with blur */}
       <div
         className="absolute inset-0 bg-sacred/80"
         style={{ backdropFilter: "blur(12px) saturate(140%)", WebkitBackdropFilter: "blur(12px) saturate(140%)" }}
       />
 
-      {/* Modal */}
       <div
         ref={modalRef}
         className="relative w-full max-w-2xl mx-4 rounded-3xl bg-sand shadow-2xl overflow-hidden flex flex-col"
         style={{ opacity: 0, maxHeight: "85vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex-shrink-0 flex items-center justify-between p-6 bg-sand border-b border-sacred/10">
           <div>
             <h3 className="font-display text-3xl text-sacred">{message.name}</h3>
@@ -118,23 +116,12 @@ function MessageModal({ message, onClose }: MessageModalProps) {
             className="flex items-center justify-center w-10 h-10 rounded-full bg-sacred/10 hover:bg-sacred/20 transition-colors duration-300"
             aria-label="Close"
           >
-            <svg
-              className="w-5 h-5 text-sacred"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg className="w-5 h-5 text-sacred" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
           {message.imageUrl && (
             <div className="mb-6">
@@ -150,7 +137,6 @@ function MessageModal({ message, onClose }: MessageModalProps) {
           </p>
         </div>
 
-        {/* Bottom gradient fade */}
         <div className="flex-shrink-0 h-6 bg-gradient-to-t from-sand to-transparent pointer-events-none" />
       </div>
     </div>,
@@ -158,15 +144,7 @@ function MessageModal({ message, onClose }: MessageModalProps) {
   );
 }
 
-function MessageCard({
-  message,
-  index,
-  onSelect,
-}: {
-  message: Message;
-  index: number;
-  onSelect: (msg: Message) => void;
-}) {
+function MessageCard({ message, index, onSelect }: { message: Message; index: number; onSelect: (msg: Message) => void }) {
   return (
     <div
       className={`cursor-pointer ${index % 2 === 1 ? "mt-8" : ""}`}
@@ -200,9 +178,7 @@ function MessageCard({
 
         {(message.content.length > 150 || message.imageUrl) && (
           <div className="mt-3 flex items-center gap-2">
-            <span className="font-serif text-xs text-sacred/40 italic">
-              Click to view
-            </span>
+            <span className="font-serif text-xs text-sacred/40 italic">Click to view</span>
             <div className="h-px flex-1 bg-sacred/10" />
           </div>
         )}
@@ -211,38 +187,43 @@ function MessageCard({
   );
 }
 
+async function fetchMessages(): Promise<Message[]> {
+  const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    name: doc.data().name as string,
+    content: doc.data().content as string,
+    imageUrl: (doc.data().imageUrl as string | null) ?? null,
+    createdAt: (doc.data().createdAt as { toDate(): Date } | null)?.toDate() ?? new Date(),
+  }));
+}
+
 export default function MessagesSection() {
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: messages, isLoading } = trpc.message.list.useQuery();
-  const utils = trpc.useUtils();
-  const createMessage = trpc.message.create.useMutation({
-    onSuccess: () => {
-      utils.message.list.invalidate();
-      setName("");
-      setContent("");
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    },
-  });
+  useEffect(() => {
+    fetchMessages().then(setMessages).finally(() => setIsLoading(false));
+  }, []);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.size > 10 * 1024 * 1024) {
       alert("Image must be less than 10MB");
       return;
     }
-
     try {
       const resized = await resizeImage(file, 800, 800, 0.75);
       setImagePreview(resized);
@@ -256,14 +237,28 @@ export default function MessagesSection() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !content.trim()) return;
-    createMessage.mutate({
-      name: name.trim(),
-      content: content.trim(),
-      imageUrl: imagePreview || undefined,
-    });
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, "messages"), {
+        name: name.trim(),
+        content: content.trim(),
+        imageUrl: imagePreview ?? null,
+        createdAt: serverTimestamp(),
+      });
+      const updated = await fetchMessages();
+      setMessages(updated);
+      setName("");
+      setContent("");
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch {
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -272,90 +267,49 @@ export default function MessagesSection() {
         titleRef.current,
         { opacity: 0, y: 40 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
+          opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+          scrollTrigger: { trigger: titleRef.current, start: "top 85%", toggleActions: "play none none none" },
         }
       );
-
       gsap.fromTo(
         formRef.current,
         { opacity: 0, y: 30 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.2,
-          scrollTrigger: {
-            trigger: formRef.current,
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
+          opacity: 1, y: 0, duration: 1, ease: "power3.out", delay: 0.2,
+          scrollTrigger: { trigger: formRef.current, start: "top 85%", toggleActions: "play none none none" },
         }
       );
-
       if (gridRef.current) {
         gsap.fromTo(
           gridRef.current,
           { opacity: 0 },
           {
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-            delay: 0.4,
-            scrollTrigger: {
-              trigger: gridRef.current,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
+            opacity: 1, duration: 1, ease: "power3.out", delay: 0.4,
+            scrollTrigger: { trigger: gridRef.current, start: "top 85%", toggleActions: "play none none none" },
           }
         );
       }
     }, sectionRef);
-
     return () => ctx.revert();
   }, [messages]);
 
   return (
-    <section
-      id="messages-section"
-      ref={sectionRef}
-      className="relative w-full bg-sand py-24 px-6"
-    >
+    <section id="messages-section" ref={sectionRef} className="relative w-full bg-sand py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2
-            ref={titleRef}
-            className="font-display text-4xl lg:text-5xl text-sacred mb-4 opacity-0"
-          >
-            Write a Message for Neela
+          <h2 ref={titleRef} className="font-display text-4xl lg:text-5xl text-sacred mb-4 opacity-0">
+            Write a Message for Naila
           </h2>
           <p className="font-serif text-lg text-sacred/60 italic max-w-2xl mx-auto">
             Please feel free to add your messages of condolence on this page.
             The family request that you include any anecdotes, stories or photos
-            to recount your memories of Neela.
+            to recount your memories of Naila.
           </p>
         </div>
 
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit}
-          className="mb-16 p-8 rounded-[40px] bg-sacred shadow-xl shadow-sacred/20 opacity-0"
-        >
+        <form ref={formRef} onSubmit={handleSubmit} className="mb-16 p-8 rounded-[40px] bg-sacred shadow-xl shadow-sacred/20 opacity-0">
           <div className="mb-6">
-            <label
-              htmlFor="name"
-              className="block font-display text-xl text-sand mb-3"
-            >
-              Your Name
-            </label>
+            <label htmlFor="name" className="block font-display text-xl text-sand mb-3">Your Name</label>
             <input
               id="name"
               type="text"
@@ -369,12 +323,7 @@ export default function MessagesSection() {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="message"
-              className="block font-display text-xl text-sand mb-3"
-            >
-              Your Message
-            </label>
+            <label htmlFor="message" className="block font-display text-xl text-sand mb-3">Your Message</label>
             <textarea
               id="message"
               value={content}
@@ -387,19 +336,11 @@ export default function MessagesSection() {
             />
           </div>
 
-          {/* Image Upload */}
           <div className="mb-8">
-            <label className="block font-display text-xl text-sand mb-3">
-              Photo (optional)
-            </label>
-
+            <label className="block font-display text-xl text-sand mb-3">Photo (optional)</label>
             {imagePreview ? (
               <div className="relative inline-block">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-40 h-40 object-cover rounded-2xl border border-sand/20"
-                />
+                <img src={imagePreview} alt="Preview" className="w-40 h-40 object-cover rounded-2xl border border-sand/20" />
                 <button
                   type="button"
                   onClick={handleRemoveImage}
@@ -422,28 +363,18 @@ export default function MessagesSection() {
                 <span className="font-serif text-base">Add a photo</span>
               </button>
             )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <p className="font-serif text-xs text-sand/30 mt-2">
-              Images are resized and compressed automatically. Max upload 10MB.
-            </p>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+            <p className="font-serif text-xs text-sand/30 mt-2">Images are resized and compressed automatically. Max upload 10MB.</p>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="font-serif text-sm text-sand/40">
-              {content.length}/2000 characters
-            </span>
+            <span className="font-serif text-sm text-sand/40">{content.length}/2000 characters</span>
             <button
               type="submit"
-              disabled={createMessage.isPending}
+              disabled={isSubmitting}
               className="px-10 py-4 rounded-full bg-terracotta text-sand font-serif text-lg tracking-wider hover:bg-terracotta/90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-terracotta/30"
             >
-              {createMessage.isPending ? "Sending..." : "Send Message"}
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </div>
         </form>
@@ -453,41 +384,24 @@ export default function MessagesSection() {
             <div className="inline-block w-8 h-8 border-2 border-sacred/20 border-t-sacred rounded-full animate-spin" />
             <p className="font-serif text-sacred/50 mt-4">Loading messages...</p>
           </div>
-        ) : messages && messages.length > 0 ? (
+        ) : messages.length > 0 ? (
           <div>
-            <h3 className="font-display text-3xl text-sacred text-center mb-10">
-              Messages of Love
-            </h3>
-            <div
-              ref={gridRef}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-0"
-            >
+            <h3 className="font-display text-3xl text-sacred text-center mb-10">Messages of Love</h3>
+            <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-0">
               {messages.map((msg, index) => (
-                <MessageCard
-                  key={msg.id}
-                  message={msg}
-                  index={index}
-                  onSelect={setSelectedMessage}
-                />
+                <MessageCard key={msg.id} message={msg} index={index} onSelect={setSelectedMessage} />
               ))}
             </div>
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="font-display text-3xl text-sacred/30 mb-3">
-              No messages yet
-            </p>
-            <p className="font-serif text-sacred/40">
-              Be the first to share your memories of Neela
-            </p>
+            <p className="font-display text-3xl text-sacred/30 mb-3">No messages yet</p>
+            <p className="font-serif text-sacred/40">Be the first to share your memories of Naila</p>
           </div>
         )}
       </div>
 
-      <MessageModal
-        message={selectedMessage}
-        onClose={() => setSelectedMessage(null)}
-      />
+      <MessageModal message={selectedMessage} onClose={() => setSelectedMessage(null)} />
     </section>
   );
 }
