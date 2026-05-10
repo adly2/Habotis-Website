@@ -75,7 +75,7 @@ export default function HeroSection() {
           ref={textRef}
           className="flex-1 max-w-xl text-center lg:text-left opacity-0 order-2 lg:order-1"
         >
-          <h1 className="font-display text-4xl lg:text-5xl text-sand mb-2 leading-tight">
+          <h1 className="font-display text-4xl lg:text-5xl text-sand mb-2 leading-tight lg:whitespace-nowrap">
             Professor Naila (Neela) Lamki
           </h1>
           <p className="font-display text-xl text-sand/60 mb-6">(1941-2026)</p>
