@@ -297,10 +297,10 @@ export default function MessagesSection() {
     <section id="messages-section" ref={sectionRef} className="relative w-full bg-sand py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 ref={titleRef} className="font-display text-4xl lg:text-5xl text-sacred mb-4 opacity-0">
+          <h2 ref={titleRef} className="font-display text-5xl lg:text-6xl text-sacred mb-4 opacity-0">
             Write a Message for Naila
           </h2>
-          <p className="font-serif text-lg text-sacred/60 italic max-w-2xl mx-auto">
+          <p className="font-serif text-xl text-sacred/60 italic font-bold max-w-2xl mx-auto">
             Please feel free to add your messages of condolence on this page.
             The family request that you include any anecdotes, stories or photos
             to recount your memories of Naila.

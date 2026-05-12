@@ -69,80 +69,100 @@ export default function HeroSection() {
         <span className="font-display text-xl text-sand/90 tracking-wide">In Loving Memory</span>
       </div>
 
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20 max-w-6xl w-full">
-        {/* Left: Obituary Text */}
-        <div
-          ref={textRef}
-          className="flex-1 max-w-xl text-center lg:text-left opacity-0 order-2 lg:order-1"
-        >
-          <h1 className="font-display text-4xl lg:text-5xl text-sand mb-2 leading-tight lg:whitespace-nowrap">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-10 max-w-5xl w-full">
+        {/* Title */}
+        <div ref={textRef} className="w-full text-center opacity-0">
+          <h1 className="font-display text-4xl lg:text-5xl text-sand mb-2 leading-tight">
             Professor Naila (Neela) Lamki
           </h1>
-          <p className="font-display text-xl text-sand/60 mb-6">(1941-2026)</p>
-
-          <p className="font-serif text-lg text-sand/80 leading-relaxed mb-6 italic">
-            &ldquo;Indeed, to Allah we belong and to Him we shall return&rdquo; (Surah Al-Baqarah 2:156)
-          </p>
-
-          <div className="font-serif text-xl text-sand/70 leading-relaxed space-y-4 text-left">
-            <p>
-              It is with great sadness that the family of Naila Lamki announce her passing on
-              Tuesday May 5<sup>th</sup>, 2026, after a sudden illness. She was surrounded by her
-              husband and children as she passed peacefully from this life.
-            </p>
-            <p>
-              Naila led a tremendously full and productive life. Following her early education in
-              Uganda, she attended the Royal College of Surgeons of Ireland, where she received
-              her medical degree. Here, she met her life-partner, Dr Lamk Lamki, with whom she
-              would spend 60 years of inseparable love and marriage.
-            </p>
-            <p>
-              The young couple started their professional careers and family in Toronto, Canada
-              where Naila became a Consultant Radiologist.
-            </p>
-            <p>
-              The next phase of her career took her to Houston, Texas where she served for 20
-              years at Baylor College of Medicine, as the Program Director for the Radiology
-              residency training program, and as an Attending Radiologist at Ben Taub General
-              Hospital.
-            </p>
-            <p>
-              The couple then moved to Muscat, Oman where Naila was instrumental in establishing
-              nineteen ACGME-accredited residency training programs through the Oman Medical
-              Specialty Board, in which she served as the Vice President for Academic Affairs.
-            </p>
-            <p>
-              Naila published extensively, and was the recipient of numerous honors, awards and
-              fellowships from various departments and universities internationally. Throughout
-              her life and career, she exhibited humility, compassion, quiet persistence, hard
-              work and unending dedication to her family, patients and students. Her legacy
-              continues through the many physicians who were impacted by her guidance and
-              mentorship.
-            </p>
-            <p>
-              Naila is survived by her loving husband of 60 years, 3 children and 12 grandchildren.
-            </p>
-          </div>
+          <p className="font-display text-xl text-sand/60">(1941-2026)<br />(Hijri Year 1360-1447)</p>
         </div>
 
-        {/* Right: Portrait */}
-        <div
-          ref={portraitRef}
-          className="flex-shrink-0 order-1 lg:order-2 opacity-0"
-        >
+        {/* Portrait */}
+        <div ref={portraitRef} className="flex-shrink-0 opacity-0">
           <div className="relative">
             <div className="absolute -inset-3 border border-sand/10 rounded-lg" />
             <div className="absolute -inset-6 border border-sand/5 rounded-lg" />
-
             <img
               src="/naila-portrait.jpg"
               alt="Portrait of Professor Naila Lamki"
-              className="relative w-80 lg:w-96 rounded-lg shadow-2xl shadow-black/30"
+              className="relative w-96 sm:w-120 rounded-lg shadow-2xl shadow-black/30"
             />
-
             <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-sacred/30 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
+
+        {/* Obituary Text */}
+        <div className="w-full">
+          <div className="font-serif text-2xl font-bold text-sand/70 leading-relaxed space-y-4 text-left">
+            <p>
+              On May 5th, 2026, Naila departed from this world the same way she lived in it: Quietly,
+              gracefully, and surrounded by those she loved most. Her husband, children, siblings, and
+              grandchildren were at her side, holding the woman who had held them all for so long.
+            </p>
+            <p>
+              She spent her youth in Uganda before graduating from the Royal College of Surgeons in
+              Ireland and building a distinguished career as a Professor in Radiology that carried her
+              from Toronto to Houston to Muscat. Wherever she went, she accomplished more than only
+              practicing medicine; she built futures, broke barriers, and opened doors for those who
+              believed they couldn&apos;t. Naila shaped lives with her brilliance, warmth, and
+              unwavering confidence in others. She guided generations of physicians, first at Baylor
+              College of Medicine, and later in Oman, where she helped build the future of medical
+              education by founding 19 medical residencies that continue to pass her influence forward.
+              Prof Naila&apos;s name appears on many publications, fellowships, and honors from around
+              the world. Yet, the people who loved her will remember something far greater; her truest
+              legacy lives in the countless hearts she touched through her unwavering kindness and
+              generosity toward everyone she met.
+            </p>
+            <p>
+              What made Naila was the way she walked into a room and made it feel like home. Strangers
+              became family in her presence. She was a second mother to many, and a first to the three
+              children she raised with steadfast grace and resolute love. When her children married,
+              she did not gain in-laws. She gained three more children whom she loved and claimed with
+              the same fierce tenderness she gave her own.
+            </p>
+            <p>
+              She and her husband, Lamk, built a love that lasted nearly sixty years, planning their
+              sixtieth anniversary this July. A love so enduring, so tender, and so certain that even
+              time seemed unable to wear it. To witness them was to understand that real love is not
+              something that fades into routine. Rather, it deepens, matures, and becomes woven into
+              the fabric of a life shared. The family of six children and twelve grandchildren, which
+              resulted from their love, was to be her greatest pride.
+            </p>
+            <p>
+              Her faith ran deep, though she carried it sincerely and without spectacle, as she did
+              everything else. She lived by the principle of niyyah, the belief that actions are
+              weighed by the intention behind them.{" "}
+              <span dir="rtl" lang="ar" className="font-serif">إنّما الأعمال بالنّيّات</span>{" "}
+              Every act of hers, large or small, was rooted in pure intention. To heal, to teach,
+              to lift, to love. Her goodness revealed itself to everyone in the way she lived, her
+              intentions speaking for themselves, and Allah knowing her heart.
+            </p>
+            <p>
+              Naila is survived by her beloved husband, three children and their spouses, twelve
+              grandchildren, as well as her brothers and their families. Additionally, the myriad of
+              friends, students, colleagues, confidantes and loved ones who were changed by simply
+              having known her, spending the rest of their lives trying to live up to the standard
+              she set just by being herself.
+            </p>
+            <p dir="rtl" lang="ar" className="font-serif text-center text-sand/90">
+              إنّا لله و إنّا إليه راجعون
+            </p>
+            <p className="italic text-sand/80">
+              &ldquo;Indeed, to Allah we belong and to Him we shall return&rdquo; (Surah Al-Baqarah 2:156)
+            </p>
+            <p className="border-t border-sand/20 pt-4">
+              <span className="font-display text-sand not-italic">To Honor Naila:</span>{" "}
+              Naila devoted herself to many charitable causes, though closest to her heart were
+              promoting education, elevating others &amp; improving care for breast cancer patients,
+              especially those underserved. In honor of her life, you are invited to share a message,
+              a photo and/or a donation to breast cancer care &amp; research (Sadaqa Jariya / ongoing
+              charity in her name). Every word, every gift, every memory shared allows her love and
+              legacy to continue touching others.
+            </p>
+          </div>
+        </div>
+
       </div>
 
       {/* Scroll Indicator */}
